@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "261159882169",
+    "project_id": "operational-3b1b6",
+    "storage_bucket": "operational-3b1b6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261159882169:android:ad741173fe1d237acefa68",
+        "android_client_info": {
+          "package_name": "com.example.operational"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSmgv3vBj3hiZIabvWwpuuTwcIl8w0w3k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
