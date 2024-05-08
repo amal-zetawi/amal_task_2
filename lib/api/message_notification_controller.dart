@@ -18,14 +18,6 @@ class MessageNotificationController extends GetxController {
   addMessage() {
     notifications.add(NotificationMessage(
         title: title.value, body: body.value, payload: payload));
-    increaseCount();
   }
 
-  increaseCount() {
-    count.value += 1;
-  }
-
-  decreaseCount() {
-    count.value -= 1;
-  }
 }

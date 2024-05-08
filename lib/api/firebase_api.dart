@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:operational/main.dart';
 import 'notification_message.dart';
@@ -14,7 +13,6 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async {
 
 class FirebaseApi {
   final firebaseMessageing = FirebaseMessaging.instance;
-
   final androidChannel = const AndroidNotificationChannel(
     "hight_importance_channel",
     "High Importance Notifications",
@@ -22,39 +20,6 @@ class FirebaseApi {
     importance: Importance.defaultImportance,
   );
   final localNotifications = FlutterLocalNotificationsPlugin();
-
-  void handleMessage(RemoteMessage? message) async {
-    if (message != null) {
-      messageNotificationController!.decreaseCount();
-
-      Get.toNamed('/notificationPage', arguments: {"message": message});
-    } else {
-      print('');
-    }
-  }
-
-  Future initLocalNotifications() async {
-    const iOS = DarwinInitializationSettings();
-    const android = AndroidInitializationSettings('@drawable/ic_launcher');
-    const settings = InitializationSettings(android: android, iOS: iOS);
-    await localNotifications.initialize(
-      settings,
-      onDidReceiveNotificationResponse: (payload) {
-        RemoteMessage message = RemoteMessage(
-          data: json.decode(payload.payload.toString()),
-          notification: RemoteNotification(
-            title: messageNotificationController!.title.value,
-            body: messageNotificationController!.body.value,
-          ),
-        );
-
-        handleMessage(message);
-      },
-    );
-    final platform = localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
-    await platform?.createNotificationChannel(androidChannel);
-  }
 
   Future<void> initPushNotification() async {
     await FirebaseMessaging.instance
@@ -64,19 +29,9 @@ class FirebaseApi {
       sound: true,
     );
 
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null) {
-        handleMessage(message);
-      }
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      handleMessage(message);
-    });
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
     FirebaseMessaging.onMessage.listen((message) {
       if (message.notification != null) {
-        print(message.notification!.body);
-        print("message id: ${message.messageId}");
         messageNotificationController!.updateMessage(
           NotificationMessage(
               title: message.notification!.title.toString(),
@@ -104,8 +59,6 @@ class FirebaseApi {
             },
           ),
         );
-      } else {
-        print('');
       }
     });
   }
@@ -116,7 +69,6 @@ class FirebaseApi {
     print(fCMToken);
     prefs!.setString('token', fCMToken!);
     initPushNotification();
-    initLocalNotifications();
   }
 
   sendMessage(String title, String message, String id) async {
@@ -156,16 +108,11 @@ class FirebaseApi {
     req.headers.addAll(headersList);
     req.body = json.encode(body);
     var res = await req.send();
-    final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      var res = json.decode(resBody);
-      print("the result is: ${res['results'][0]['message_id']}");
-
       NotificationMessage notificationMessage = NotificationMessage(
           title: title, body: message, payload: body['data']);
       messageNotificationController!.updateMessage(notificationMessage);
-      messageNotificationController!.increaseCount();
     } else {
       print("fail: ${res.reasonPhrase}");
     }

@@ -32,11 +32,11 @@ class HomeScreen extends  GetWidget<HomeController> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                await FirebaseApi().initNotifications();
                 await FirebaseApi().sendMessage(
                     "Notification",
                     "Welcome on App!",
-                    "9999${DateTime.now}");
-                await FirebaseApi().initNotifications();
+                    "${DateTime.now}");
               },
               child:const Text('Send Notification'),
             ),
